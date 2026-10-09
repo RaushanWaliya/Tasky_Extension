@@ -1,141 +1,211 @@
-# Tasky
+# Tasky — Browser Side Panel Extension
 
-Tasky ek Chrome extension hai jo website ke right side me Apollo jaisa panel kholta hai, aur ek ASP.NET Core backend jo 10 external public APIs ka data laata hai. Panel Chrome ka native Side Panel hai: Chrome khud page ko chhota karta hai, isliye website ka layout aur CSS bilkul nahi bigadte.
+Tasky is a Chrome extension that opens a useful side panel on the right side of a website. It also includes an ASP.NET Core Web API backend that connects to external APIs and displays their data inside the extension.
 
-## Kya milta hai
+Tasky uses Chrome's native Side Panel, so the website does not need to be modified to display the panel.
 
-| Requirement | Kaise pura hua |
-| --- | --- |
-| Right side me Apollo jaisa tab | Page ke right edge par chhota Tasky tab (aapka logo) |
-| Hover karke kahin bhi le jaana | Tab ko pakad kar upar neeche drag karo, position yaad rehti hai |
-| Click par screen adjust ho | Chrome ka native Side Panel: browser khud viewport chhota karta hai, website ko pata bhi nahi chalta, layout ya CSS me koi change nahi |
-| Click par open, dobara click par close | Tab par click, panel ka X button, Esc, toolbar icon, Alt+Shift+T |
-| Panel ki width | Width Chrome control karta hai (Apollo me bhi yahi hai). Panel ke left edge ko drag karke 35% jitna kar do, Chrome use yaad rakhta hai |
-| Sirf apni websites par chale | `bumblebot.tech` aur `nexthink.com` (manifest.json me) |
-| 8 se 10 tabs, har tab ka alag API | 10 tabs: Weather, Crypto, Currency, Countries, Users, GitHub, Holidays, Hacker News, Todos, Create Post |
-| Execute karwana | Create Post tab ek POST request chalata hai |
-| Frontend | Simple HTML, CSS, JavaScript (TypeScript nahi) |
+## Features
+
+- **Side Panel UI:** Open a panel on the right side of supported websites.
+- **Draggable Launcher:** Move the Tasky launcher up or down on the page.
+- **Easy Access:** Open or close the panel using the launcher or supported controls.
+- **Multiple API Tabs:** View data from 10 different public APIs.
+- **Dynamic Forms:** Generate input forms from database configuration.
+- **API Execution:** Send requests to external APIs, including supported POST requests.
+- **Configurable APIs:** Add new API sources through SQL Server without changing the extension UI code.
+- **Caching:** Reduce repeated external API requests using configurable cache durations.
+- **API Call Logs:** Store API call information in the database.
+- **Backend Error Handling:** Handle errors centrally in the ASP.NET Core backend.
+- **Local Development:** Run the backend locally with SQL Server or the configured InMemory provider.
+
+## Technologies Used
+
+| Component | Technology |
+|---|---|
+| Browser Extension | Chrome Extension Manifest V3 |
+| Frontend | HTML, CSS, JavaScript |
 | Backend | ASP.NET Core 8 Web API |
-| Database | SQL Server |
+| Database | Microsoft SQL Server |
+| Data Access | Entity Framework Core / configured data-access layer |
+| API Testing | Swagger, Playwright |
+| Testing Backend | Node.js mock backend |
 
-## Folder structure
+## API Integrations
 
-```
+Tasky includes 10 starter API integrations:
+
+1. Weather
+2. Cryptocurrency
+3. Currency Exchange
+4. Countries
+5. Users
+6. GitHub
+7. Holidays
+8. Hacker News
+9. Todos
+10. Create Post
+
+The extension loads its tabs and form configuration from the backend, allowing new API sources to be added through database configuration.
+
+## Project Structure
+
+```text
 Tasky/
-  extension/            Chrome me yahi folder load hota hai
-    manifest.json       permissions, websites, shortcut
-    background/         side panel open/close, sirf allowed websites par enable
-    content/            launcher.js (right edge ka tab, drag), dock.css (sirf tab ka style)
-    panel/              panel ka UI (Chrome ke side panel me khulta hai)
-      js/main.js        poori screen ka flow
-      js/apiClient.js   backend se baat karne wali ek hi file
-      js/formRenderer.js    database ke inputs se form banata hai
-      js/resultRenderer.js  list, stats, keyvalue me result dikhata hai
-      js/config.js, dom.js, format.js, pathUtil.js
-      css/panel.css
-    icons/              aapke diye hue icons
-  backend/Tasky.Api/    ASP.NET Core 8 Web API
-    Controllers/        sirf request lena aur response dena
-    Services/           business logic (ProxyService sabse important)
-    Repositories/       database queries + UnitOfWork
-    Data/               DbContext, seed data
-    Domain/Entities/    ApiSource, ApiCallLog
-    Dtos/, Mapping/     response ke shapes, manual mapping (AutoMapper nahi)
-    Middleware/         saari errors ek jagah handle
-    Exceptions/, Options/, Extensions/
-  database/schema.sql   SQL Server script (tables + 10 starter APIs)
-  tools/mock_backend.js sirf test ke liye nakli backend
-  tests/e2e_extension.cjs   real Chromium me automatic test
+├── extension/             # Chrome extension
+│   ├── manifest.json
+│   ├── background/
+│   ├── content/
+│   ├── panel/
+│   └── icons/
+├── backend/
+│   └── Tasky.Api/         # ASP.NET Core Web API
+│       ├── Controllers/
+│       ├── Services/
+│       ├── Repositories/
+│       ├── Data/
+│       ├── Domain/
+│       ├── Dtos/
+│       └── Middleware/
+├── database/
+│   └── schema.sql         # Database schema and starter API data
+├── tools/
+│   └── mock_backend.js
+└── tests/
+    └── e2e_extension.cjs
 ```
 
-Layers: `Controller` to `Service` to `Repository` to `UnitOfWork` to `DbContext`. Ek layer sirf apne neeche wali layer ko jaanti hai.
+## Getting Started
 
-## Run kaise karein
+### 1. Clone the Repository
 
-### 1. Database
-
-SQL Server Management Studio ya Azure Data Studio me `database/schema.sql` poori run karo. Isse `TaskyDb` database, 2 tables aur 10 APIs ki rows ban jaati hain.
-
-### 2. Backend
-
-`backend/Tasky.Api/appsettings.json` me connection string check karo (default Windows login wali local SQL Server hai):
-
+```bash
+git clone https://github.com/RaushanWaliya/Tasky_Extension.git
+cd Tasky_Extension
 ```
+
+### 2. Set Up the Database
+
+- Open `database/schema.sql` in SQL Server Management Studio or Azure Data Studio.
+- Execute the script to create the `TaskyDb` database, tables, and starter API configuration.
+- Check the connection string in `backend/Tasky.Api/appsettings.json`.
+
+Example local SQL Server connection string:
+
+```text
 Server=localhost;Database=TaskyDb;Trusted_Connection=True;TrustServerCertificate=True;
 ```
 
-Phir:
+### 3. Run the Backend
 
-```
+Open a terminal:
+
+```bash
 cd backend/Tasky.Api
 dotnet dev-certs https --trust
 dotnet run --launch-profile https
 ```
 
-Swagger `https://localhost:5081/swagger` par khulega. Check karne ke liye `https://localhost:5081/api/sources` browser me kholo, 10 APIs ki list dikhni chahiye.
+Open Swagger:
 
-SQL Server abhi install nahi hai aur sirf try karna hai? `appsettings.json` me `"Provider": "InMemory"` kar do. Backend bina SQL Server ke starter data ke saath chal jaayega (restart par logs reset hote hain).
+`https://localhost:5081/swagger`
 
-### 3. Extension
+To check the configured API sources, open:
 
-1. Chrome me `chrome://extensions` kholo.
-2. Developer mode ON karo.
-3. Load unpacked dabao aur **extension** folder chuno (poora Tasky folder nahi).
-4. `https://bumblebot.tech/` ya `https://nexthink.com/` kholo. Right edge par Tasky tab dikhega.
+`https://localhost:5081/api/sources`
 
-Backend ka URL panel ke upar ⚙ icon se badal sakte ho. Default `https://localhost:5081` hai.
+### 4. Load the Chrome Extension
 
-## Apni API kaise lagayein
+1. Open `chrome://extensions` in Chrome.
+2. Enable **Developer mode**.
+3. Click **Load unpacked**.
+4. Select the project's `extension` folder.
+5. Open a supported website, such as `https://bumblebot.tech/`.
 
-Code badalne ki zarurat nahi. `api_sources` table me ek row daalo, naya tab apne aap aa jaayega.
+The Tasky launcher should appear on the page's right edge.
 
-```sql
-INSERT INTO dbo.api_sources
- (source_key, title, icon, description, sort_order, http_method, url_template,
-  headers_json, input_schema_json, display_type, display_config_json, cache_seconds)
-VALUES
- (N'orders', N'Orders', N'📦', N'Meri company ke orders', 11, N'GET',
-  N'https://api.mycompany.com/orders?status={status}',
-  N'{"Authorization":"Bearer MY_SECRET_TOKEN"}',
-  N'[{"name":"status","label":"Status","type":"select","required":true,"default":"open","options":["open","closed"]}]',
-  N'list',
-  N'{"itemsPath":"items","title":"orderNo","subtitle":"customer","value":{"path":"amount","format":"number"},"badge":{"path":"status"}}',
-  60);
+The backend must be running for API data to load. The extension's backend URL can be configured through its settings, where supported.
+
+## Adding a New API
+
+Tasky supports configurable API sources.
+
+To add a new API:
+
+1. Add a new row to the `dbo.api_sources` table.
+2. Configure its title, HTTP method, URL, headers, input schema, and display settings.
+3. Restart or refresh components if required by the current implementation.
+4. Open the extension and check the new API tab.
+
+Supported display types:
+
+- `list`
+- `stats`
+- `keyvalue`
+
+**Security:** Store API secrets on the backend, not in the browser extension. Do not commit real API keys, passwords, or sensitive connection strings to GitHub.
+
+## Architecture
+
+Tasky follows a layered backend architecture:
+
+```text
+Chrome Extension
+       |
+       v
+ASP.NET Core Web API
+       |
+       v
+Controller
+       |
+       v
+Service
+       |
+       v
+Repository / Unit of Work
+       |
+       v
+DbContext
+       |
+       v
+SQL Server
 ```
 
-Samjhne ki baatein:
+The backend retrieves API configuration, validates inputs, calls the configured external APIs, handles errors, and records API call logs.
 
-* `{status}` jaisa hissa user ke input se bharta hai. Value URL encode hoti hai aur validate hoti hai (type, select options, pattern, maxLength).
-* Secret token headers me backend par rehta hai, browser ya extension me kabhi nahi aata.
-* `display_type` teen hain: `list`, `stats`, `keyvalue`. `display_config_json` batata hai response ka kaun sa field kahan dikhana hai (path jaise `company.name` ya `capital[0]`).
-* Formats: `number`, `number4`, `percent`, `bool`, `done`, `date`, `upper`.
-* POST API ke liye `http_method = POST` aur `body_template` do, jaise `{"title":"{title}"}`.
-* Naye API ka website extension me `host_permissions` badalne ki zarurat nahi, kyunki extension sirf aapke backend se baat karta hai.
+## Testing
 
-## Websites badalna ya jodna
+Tasky includes an end-to-end test using Playwright and Chromium.
 
-`extension/manifest.json` me `content_scripts.matches` aur `web_accessible_resources.matches` dono jagah naya pattern jodo, jaise `"https://*.mysite.com/*"`. Phir chrome://extensions me extension reload karo.
+The test setup uses a mock backend to verify extension behavior without relying on live external APIs.
 
-Backend ko jab server par deploy karo, to manifest ke `host_permissions` me uska URL bhi jodo (abhi sirf localhost allowed hai).
+See `tests/e2e_extension.cjs` for the test implementation.
 
-## Panel ki width
+## Important Notes
 
-Native side panel ki width Chrome sambhalta hai, extension nahi. Panel ke left edge ko pakad kar drag karo aur 35% jitna kar do. Chrome ye width yaad rakhta hai, to ek hi baar karna padega.
+- The extension currently supports only the website patterns configured in `extension/manifest.json`.
+- Chrome controls the native Side Panel's width.
+- Public APIs may have rate limits or availability issues.
+- SQL Server is required for the SQL-backed configuration; the InMemory provider can be used for local experimentation if supported by the current backend configuration.
+- Before deploying to production, configure secure credentials, HTTPS, API restrictions, and appropriate access controls.
 
-## Test
+## Author
 
-Extension ka automatic test real Chromium me chalta hai (nakli backend `tools/mock_backend.js` ke saath). Ye drag, side panel ka sirf allowed websites par enable hona, website ke html aur body me koi change na hona, open aur close ka toggle, 10 tabs, POST execute, validation error, offline message aur strict CSP wali site check karta hai.
+**Raushan Waliya**
 
-```
-cd tests
-npm install playwright
-npx playwright install chromium
-SHOT_DIR=. xvfb-run -a node e2e_extension.cjs      # Linux
-```
+GitHub: [RaushanWaliya](https://github.com/RaushanWaliya)
 
-## Dhyan rakhne wali baatein
+## License
 
-* Page ko chhota karne ke liye Tasky kuch bhi nahi badalta. Chrome khud window jitna chhota kar deta hai, isliye website apne aap responsive layout dikhati hai.
-* Side panel tab ke hisaab se khulta hai: dusre tab par jaoge to wahan panel nahi dikhega, wapas aaoge to dikhega.
-* Public APIs ki rate limit hoti hai (jaise CoinGecko). Isliye backend har tab ka result `cache_seconds` tak yaad rakhta hai.
-* Har API call `api_call_logs` table me likhi jaati hai. Dekhne ke liye `GET /api/logs`.
+No license has been specified yet. Add a `LICENSE` file before presenting this repository as open-source software.
+
+## Screenshots
+
+### Tasky Browser Side Panel
+![Tasky Side Panel](docs/screenshots/tasky-panel.png)
+
+### API Data
+![Tasky API Data](docs/screenshots/tasky-api-data.png)
+
+### Backend Swagger
+![Tasky Swagger](docs/screenshots/tasky-swagger.png)
+

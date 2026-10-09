@@ -1,0 +1,73 @@
+{
+  "manifest_version": 3,
+  "name": "Tasky Chrome Extension",
+  "version": "1.0.0",
+  "description": "Tasky side panel: live data from your APIs, opened in Chrome's native side panel next to the page.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_title": "Tasky (Alt+Shift+T)",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
+  },
+  "background": {
+    "service_worker": "background/service_worker.js"
+  },
+  "permissions": [
+    "storage",
+    "sidePanel"
+  ],
+  "host_permissions": [
+    "http://localhost/*",
+    "https://localhost/*",
+    "https://bumblebot.tech/*",
+    "https://*.bumblebot.tech/*",
+    "https://nexthink.com/*",
+    "https://*.nexthink.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://bumblebot.tech/*",
+        "https://*.bumblebot.tech/*",
+        "https://nexthink.com/*",
+        "https://*.nexthink.com/*"
+      ],
+      "js": [
+        "content/launcher.js"
+      ],
+      "css": [
+        "content/dock.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/icon32.png"
+      ],
+      "matches": [
+        "https://bumblebot.tech/*",
+        "https://*.bumblebot.tech/*",
+        "https://nexthink.com/*",
+        "https://*.nexthink.com/*"
+      ]
+    }
+  ],
+  "commands": {
+    "toggle-panel": {
+      "suggested_key": {
+        "default": "Alt+Shift+T"
+      },
+      "description": "Open or close the Tasky panel"
+    }
+  }
+}

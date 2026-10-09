@@ -1,0 +1,418 @@
+[
+  {
+    "key": "weather",
+    "title": "Weather",
+    "icon": "🌤",
+    "description": "Live weather for any latitude and longitude (Open-Meteo, no key needed).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://api.open-meteo.com/v1/forecast?latitude={latitude}&longitude={longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,wind_speed_10m",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [
+      {
+        "name": "latitude",
+        "label": "Latitude",
+        "type": "number",
+        "required": true,
+        "default": "28.61"
+      },
+      {
+        "name": "longitude",
+        "label": "Longitude",
+        "type": "number",
+        "required": true,
+        "default": "77.21"
+      }
+    ],
+    "displayType": "stats",
+    "displayConfig": {
+      "fields": [
+        {
+          "label": "Temperature",
+          "path": "current.temperature_2m",
+          "suffix": " °C"
+        },
+        {
+          "label": "Feels like",
+          "path": "current.apparent_temperature",
+          "suffix": " °C"
+        },
+        {
+          "label": "Humidity",
+          "path": "current.relative_humidity_2m",
+          "suffix": " %"
+        },
+        {
+          "label": "Wind",
+          "path": "current.wind_speed_10m",
+          "suffix": " km/h"
+        },
+        {
+          "label": "Observed at",
+          "path": "current.time"
+        }
+      ]
+    },
+    "cacheSeconds": 300
+  },
+  {
+    "key": "crypto",
+    "title": "Crypto",
+    "icon": "₿",
+    "description": "Top coins by market cap (CoinGecko public API).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://api.coingecko.com/api/v3/coins/markets?vs_currency={currency}&order=market_cap_desc&per_page=10&page=1&sparkline=false",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [
+      {
+        "name": "currency",
+        "label": "Currency",
+        "type": "select",
+        "required": true,
+        "default": "usd",
+        "options": [
+          "usd",
+          "inr",
+          "eur"
+        ]
+      }
+    ],
+    "displayType": "list",
+    "displayConfig": {
+      "itemsPath": "",
+      "title": "name",
+      "subtitle": "symbol",
+      "subtitleFormat": "upper",
+      "value": {
+        "path": "current_price",
+        "format": "number"
+      },
+      "badge": {
+        "path": "price_change_percentage_24h",
+        "format": "percent",
+        "tone": "signed"
+      }
+    },
+    "cacheSeconds": 60
+  },
+  {
+    "key": "currency",
+    "title": "Currency",
+    "icon": "💱",
+    "description": "Exchange rates for a base currency (open.er-api.com).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://open.er-api.com/v6/latest/{base}",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [
+      {
+        "name": "base",
+        "label": "Base currency",
+        "type": "select",
+        "required": true,
+        "default": "USD",
+        "options": [
+          "USD",
+          "INR",
+          "EUR",
+          "GBP",
+          "JPY",
+          "AUD"
+        ]
+      }
+    ],
+    "displayType": "list",
+    "displayConfig": {
+      "itemsPath": "rates",
+      "entries": true,
+      "limit": 20,
+      "title": "key",
+      "value": {
+        "path": "value",
+        "format": "number4"
+      }
+    },
+    "cacheSeconds": 600
+  },
+  {
+    "key": "countries",
+    "title": "Countries",
+    "icon": "🌍",
+    "description": "Search countries by name (REST Countries).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://restcountries.com/v3.1/name/{name}?fields=name,capital,region,population",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [
+      {
+        "name": "name",
+        "label": "Country name",
+        "type": "text",
+        "required": true,
+        "default": "India",
+        "pattern": "^[A-Za-z .'-]{2,60}$"
+      }
+    ],
+    "displayType": "list",
+    "displayConfig": {
+      "itemsPath": "",
+      "title": "name.common",
+      "subtitle": "capital[0]",
+      "value": {
+        "path": "population",
+        "format": "number",
+        "suffix": " people"
+      },
+      "badge": {
+        "path": "region"
+      }
+    },
+    "cacheSeconds": 3600
+  },
+  {
+    "key": "users",
+    "title": "Users",
+    "icon": "👥",
+    "description": "Sample user directory (JSONPlaceholder).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://jsonplaceholder.typicode.com/users",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [],
+    "displayType": "list",
+    "displayConfig": {
+      "itemsPath": "",
+      "title": "name",
+      "subtitle": "email",
+      "badge": {
+        "path": "company.name"
+      },
+      "value": {
+        "path": "address.city"
+      }
+    },
+    "cacheSeconds": 600
+  },
+  {
+    "key": "github",
+    "title": "GitHub",
+    "icon": "🐙",
+    "description": "Repository statistics (GitHub public API).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://api.github.com/repos/{repo}",
+    "bodyTemplate": null,
+    "headers": {
+      "Accept": "application/vnd.github+json"
+    },
+    "inputs": [
+      {
+        "name": "repo",
+        "label": "Repository (owner/name)",
+        "type": "text",
+        "required": true,
+        "default": "dotnet/aspnetcore",
+        "pattern": "^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+      }
+    ],
+    "displayType": "stats",
+    "displayConfig": {
+      "heading": {
+        "title": "full_name",
+        "subtitle": "description"
+      },
+      "fields": [
+        {
+          "label": "Stars",
+          "path": "stargazers_count",
+          "format": "number"
+        },
+        {
+          "label": "Forks",
+          "path": "forks_count",
+          "format": "number"
+        },
+        {
+          "label": "Open issues",
+          "path": "open_issues_count",
+          "format": "number"
+        },
+        {
+          "label": "Watchers",
+          "path": "subscribers_count",
+          "format": "number"
+        },
+        {
+          "label": "Language",
+          "path": "language"
+        },
+        {
+          "label": "License",
+          "path": "license.spdx_id"
+        },
+        {
+          "label": "Last push",
+          "path": "pushed_at",
+          "format": "date"
+        }
+      ]
+    },
+    "cacheSeconds": 300
+  },
+  {
+    "key": "holidays",
+    "title": "Holidays",
+    "icon": "🎉",
+    "description": "Public holidays by year and country (Nager.Date).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://date.nager.at/api/v3/PublicHolidays/{year}/{country}",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [
+      {
+        "name": "year",
+        "label": "Year",
+        "type": "number",
+        "required": true,
+        "default": "2026",
+        "pattern": "^[0-9]{4}$"
+      },
+      {
+        "name": "country",
+        "label": "Country",
+        "type": "select",
+        "required": true,
+        "default": "US",
+        "options": [
+          "US",
+          "GB",
+          "DE",
+          "FR",
+          "CA",
+          "AU"
+        ]
+      }
+    ],
+    "displayType": "list",
+    "displayConfig": {
+      "itemsPath": "",
+      "title": "name",
+      "subtitle": "localName",
+      "badge": {
+        "path": "date",
+        "format": "date"
+      }
+    },
+    "cacheSeconds": 3600
+  },
+  {
+    "key": "news",
+    "title": "Hacker News",
+    "icon": "📰",
+    "description": "Front page stories (HN Algolia API).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://hn.algolia.com/api/v1/search?tags=front_page&hitsPerPage=10",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [],
+    "displayType": "list",
+    "displayConfig": {
+      "itemsPath": "hits",
+      "title": "title",
+      "subtitle": "author",
+      "link": "url",
+      "value": {
+        "path": "points",
+        "suffix": " points",
+        "format": "number"
+      },
+      "badge": {
+        "path": "num_comments",
+        "suffix": " comments"
+      }
+    },
+    "cacheSeconds": 300
+  },
+  {
+    "key": "todos",
+    "title": "Todos",
+    "icon": "✅",
+    "description": "Sample task list (JSONPlaceholder).",
+    "httpMethod": "GET",
+    "urlTemplate": "https://jsonplaceholder.typicode.com/todos?_limit=10",
+    "bodyTemplate": null,
+    "headers": {},
+    "inputs": [],
+    "displayType": "list",
+    "displayConfig": {
+      "itemsPath": "",
+      "title": "title",
+      "subtitle": "userId",
+      "subtitleFormat": "user",
+      "badge": {
+        "path": "completed",
+        "format": "done",
+        "tone": "bool"
+      }
+    },
+    "cacheSeconds": 300
+  },
+  {
+    "key": "createpost",
+    "title": "Create Post",
+    "icon": "✍",
+    "description": "Execute example: sends a POST request (JSONPlaceholder echoes it back, nothing is stored).",
+    "httpMethod": "POST",
+    "urlTemplate": "https://jsonplaceholder.typicode.com/posts",
+    "bodyTemplate": "{\"title\":\"{title}\",\"body\":\"{body}\",\"userId\":{userId}}",
+    "headers": {},
+    "inputs": [
+      {
+        "name": "title",
+        "label": "Title",
+        "type": "text",
+        "required": true,
+        "default": "Hello from Tasky",
+        "maxLength": 100
+      },
+      {
+        "name": "body",
+        "label": "Body",
+        "type": "textarea",
+        "required": true,
+        "default": "Created through the Tasky extension.",
+        "maxLength": 300
+      },
+      {
+        "name": "userId",
+        "label": "User id",
+        "type": "number",
+        "required": true,
+        "default": "1",
+        "pattern": "^[0-9]{1,4}$"
+      }
+    ],
+    "displayType": "keyvalue",
+    "displayConfig": {
+      "fields": [
+        {
+          "label": "New post id",
+          "path": "id"
+        },
+        {
+          "label": "Title",
+          "path": "title"
+        },
+        {
+          "label": "Body",
+          "path": "body"
+        },
+        {
+          "label": "User id",
+          "path": "userId"
+        }
+      ]
+    },
+    "cacheSeconds": 0
+  }
+]

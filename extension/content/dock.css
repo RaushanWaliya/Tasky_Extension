@@ -1,0 +1,43 @@
+/* Styles for the small Tasky tab on the right edge of the page.
+   (The panel itself is Chrome's native side panel, so there is nothing else to style here,
+   and nothing that changes the website's own layout.)
+   Loaded by manifest.json (content_scripts.css), so it also works on websites with a strict
+   Content-Security-Policy. */
+
+#tasky-launcher {
+  all: initial;
+  position: fixed;
+  right: 0;
+  top: 220px;
+  width: 44px;
+  height: 48px;
+  z-index: 2147483647;
+  box-sizing: border-box;
+  border-radius: 12px 0 0 12px;
+  background: #1b2340 url("chrome-extension://__MSG_@@extension_id__/icons/icon32.png") center / 28px 28px no-repeat;
+  box-shadow: -2px 2px 10px rgba(15, 23, 42, 0.35);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: width 0.15s ease, background-color 0.15s ease;
+}
+
+#tasky-launcher:hover {
+  width: 52px;
+  background-color: #263059;
+}
+
+#tasky-launcher.tasky-active {
+  background-color: #3860ea;
+}
+
+#tasky-launcher:focus-visible {
+  outline: 2px solid #3860ea;
+  outline-offset: 2px;
+}
+
+#tasky-launcher.tasky-dragging {
+  cursor: grabbing;
+  transition: none;
+}

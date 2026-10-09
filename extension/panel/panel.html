@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tasky</title>
+  <link rel="stylesheet" href="css/panel.css">
+</head>
+<body>
+  <div class="app">
+
+    <!-- Top bar: logo, which website we are on, connection status, buttons -->
+    <header class="topbar">
+      <img class="logo" src="../icons/icon48.png" alt="">
+      <div class="brand">
+        <div class="brand-name">Tasky</div>
+        <div class="brand-sub" id="hostLabel">Workspace assistant</div>
+      </div>
+      <span class="status" id="status" data-state="unknown" title="Backend connection">
+        <i></i><span id="statusText">Checking</span>
+      </span>
+      <button class="icon-btn" id="settingsBtn" type="button" title="Settings" aria-label="Settings">&#9881;</button>
+      <button class="icon-btn" id="closeBtn" type="button" title="Close (Esc)" aria-label="Close panel">&#10005;</button>
+    </header>
+
+    <!-- Settings: where is the backend? -->
+    <section class="settings" id="settings" hidden>
+      <label for="apiBaseInput">Backend URL</label>
+      <div class="settings-row">
+        <input id="apiBaseInput" type="text" spellcheck="false" autocomplete="off">
+        <button class="btn" id="saveSettingsBtn" type="button">Save</button>
+      </div>
+      <p class="hint">Default is <code>https://localhost:5081</code> (the ASP.NET Core API from this project).</p>
+    </section>
+
+    <!-- One tab per API (loaded from the backend) -->
+    <nav class="tabs" id="tabs" role="tablist" aria-label="APIs"></nav>
+
+    <!-- The selected tab: form + result -->
+    <main class="content" id="content" aria-live="polite"></main>
+
+    <footer class="footer" id="footer"></footer>
+  </div>
+
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
